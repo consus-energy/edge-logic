@@ -1,13 +1,15 @@
-# edge_config.yaml
-
 # --- Required minimum for boot ---
-api_base_url: "http://localhost:8000"
-MQTT_BROKER_HOST: "localhost"
-MQTT_BROKER_PORT: 1883
-MQTT_TOPIC: "lanzone/lanzone-1/updates"
-group_id: "lanzone-001"
+api_base_url: "https://consus-ems-main-1008782913560.europe-west1.run.app"
+MQTT_BROKER_HOST: "ibce3b30.ala.eu-central-1.emqxsl.com"
+MQTT_BROKER_PORT: 8883
+MQTT_TOPIC: "lanzone/LANZ-001/updates"
+group_id: "LANZ-001"
 KEEP_ALIVE: 60
+
+# --- FastAPI endpoints (relative to api_base_url) ---
 ingest_endpoint: "/blob/ingest"
 state_validation_endpoint: "/edge/validate-state"
 modbus_validation_endpoint: "/edge/validate-modbus"
+
+# --- Device config ---
 unit_id: 1
