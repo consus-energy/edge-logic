@@ -1,0 +1,222 @@
+{
+  "device_type": "GoodWe",
+  "unit_id": 1,
+  "modbus_tcp_port": 15002,
+  "read_registers": [
+    {
+      "name": "meter_total_active_power",
+      "description": "Grid/Meter Total Active Power (Import - / Export +)",
+      "address": 36025,
+      "type": "int16",
+      "unit": "W",
+      "signed": true
+    },
+    {
+      "name": "battery_soc",
+      "description": "Battery State of Charge",
+      "address": 37007,
+      "type": "uint16",
+      "unit": "%",
+      "signed": false
+    },
+    {
+      "name": "battery_power",
+      "description": "Battery Power Output (Discharge + / Charge -)",
+      "address": 37004,
+      "type": "int16",
+      "unit": "W",
+      "signed": true
+    },
+    {
+      "name": "battery_voltage",
+      "description": "Battery Voltage",
+      "address": 37002,
+      "type": "uint16",
+      "unit": "V",
+      "signed": false
+    },
+    {
+      "name": "battery_current",
+      "description": "Battery Current (Discharge + / Charge -)",
+      "address": 37003,
+      "type": "int16",
+      "unit": "A",
+      "signed": true
+    },
+    {
+      "name": "inverter_temperature",
+      "description": "Inverter Internal Temperature",
+      "address": 37110,
+      "type": "int16",
+      "unit": "°C",
+      "signed": true
+    },
+    {
+      "name": "grid_power",
+      "description": "Grid Power (Export + / Import -)",
+      "address": 37109,
+      "type": "int16",
+      "unit": "W",
+      "signed": true
+    },
+    {
+      "name": "load_power",
+      "description": "Total Household Load Consumption Power",
+      "address": 37107,
+      "type": "uint16",
+      "unit": "W",
+      "signed": false
+    },
+    {
+      "name": "ems_mode_display",
+      "description": "EMS Power Mode Display",
+      "address": 10456,
+      "type": "uint16",
+      "unit": null,
+      "signed": false
+    },
+    {
+      "name": "app_mode_display",
+      "description": "App Mode Display",
+      "address": 10405,
+      "type": "uint16",
+      "unit": null,
+      "signed": false
+    },
+    {
+      "name": "pv_mode",
+      "description": "PV Operating Mode",
+      "address": 35119,
+      "type": "uint16",
+      "unit": null,
+      "signed": false
+    },
+    {"name":"pv1_voltage","description":"PV1 Voltage","address":35103,"type":"uint16","unit":"V","signed":false},
+    {"name":"pv1_current","description":"PV1 Current","address":35104,"type":"uint16","unit":"A","signed":false},
+    {"name":"pv1_power","description":"PV1 Power","address":35105,"type":"uint16","unit":"W","signed":false},
+    {"name":"pv2_voltage","description":"PV2 Voltage","address":35107,"type":"uint16","unit":"V","signed":false},
+    {"name":"pv2_current","description":"PV2 Current","address":35108,"type":"uint16","unit":"A","signed":false},
+    {"name":"pv2_power","description":"PV2 Power","address":35109,"type":"uint16","unit":"W","signed":false},
+    {"name":"pv3_voltage","description":"PV3 Voltage","address":35111,"type":"uint16","unit":"V","signed":false},
+    {"name":"pv3_current","description":"PV3 Current","address":35112,"type":"uint16","unit":"A","signed":false},
+    {"name":"pv3_power","description":"PV3 Power","address":35113,"type":"uint16","unit":"W","signed":false},
+    {"name":"pv4_voltage","description":"PV4 Voltage","address":35115,"type":"uint16","unit":"V","signed":false},
+    {"name":"pv4_current","description":"PV4 Current","address":35116,"type":"uint16","unit":"A","signed":false},
+    {"name":"pv4_power","description":"PV4 Power","address":35117,"type":"uint16","unit":"W","signed":false},
+    {"name":"mppt_power_1","description":"MPPT Power 1","address":35337,"type":"uint16","unit":"W","signed":false},
+    {"name":"mppt_power_2","description":"MPPT Power 2","address":35338,"type":"uint16","unit":"W","signed":false},
+    {"name":"mppt_power_3","description":"MPPT Power 3","address":35339,"type":"uint16","unit":"W","signed":false},
+    {"name":"mppt_power_4","description":"MPPT Power 4","address":35340,"type":"uint16","unit":"W","signed":false},
+  {"name":"mppt_power_5","description":"MPPT Power 5","address":35341,"type":"uint16","unit":"W","signed":false},
+  {"name":"ct2_active_power","description":"CT2 Active Power (AC-coupled PV)","address":36045,"type":"int16","unit":"W","signed":true},
+  {"name":"ems_check_status","description":"EMS Check Status (0=Checking,1=Normal,2=Fault)","address":40008,"type":"uint16","unit":null,"signed":false},
+  {"name":"bms_warning_bits","description":"BMS Warning Bitfield","address":39894,"type":"uint16","unit":null,"signed":false},
+  {"name":"bms_alarm_bits","description":"BMS Alarm Bitfield","address":39896,"type":"uint16","unit":null,"signed":false},
+  {"name":"bms_soc","description":"BMS Reported SOC (%)","address":39898,"type":"uint16","unit":"%","signed":false},
+  {"name":"bms_soh_percent","description":"BMS State of Health (%)","address":39899,"type":"uint16","unit":"%","signed":false},
+  {"name":"arc_fault","description":"Arc Fault Channel (non-zero = fault)","address":36065,"type":"uint16","unit":null,"signed":false},
+  {"name":"parallel_comm_status","description":"Parallel Communication Status Bitfield","address":36066,"type":"uint16","unit":null,"signed":false},
+  {"name":"meter_internal_external","description":"Meter Source (0=Internal,1=External)","address":50091,"type":"uint16","unit":null,"signed":false},
+  {"name":"int_meter_comm","description":"Internal Meter Communication (0=loss,1=OK)","address":50092,"type":"uint16","unit":null,"signed":false},
+  {"name":"ext_meter_comm","description":"External Meter Communication (0=loss,1=OK)","address":50094,"type":"uint16","unit":null,"signed":false},
+  {"name":"remote_comm_loss_time","description":"Remote Communication Loss Time (s,0=disabled)","address":42101,"type":"uint16","unit":"s","signed":false}
+  ],
+  "write_registers": [
+    {
+      "name": "rs485_address",
+      "description": "RS485 Modbus Address",
+      "address": 45127,
+      "type": "uint16",
+      "unit": null,
+      "signed": false
+    },
+    {
+      "name": "rs485_baud",
+      "description": "RS485 Baud Rate Code",
+      "address": 45132,
+      "type": "uint16",
+      "unit": null,
+      "signed": false
+    },
+    {
+      "name": "wifi_tcp_enable",
+      "description": "Enable TCP over Wi-Fi",
+      "address": 47040,
+      "type": "uint16",
+      "unit": null,
+      "signed": false
+    },
+    {
+      "name": "manufacturer_code",
+      "description": "Manufacturer Code (2 = EMS control)",
+      "address": 47505,
+      "type": "uint16",
+      "unit": null,
+      "signed": false
+    },
+    {
+      "name": "external_meter_enable",
+      "description": "External CT / Smart Meter Enable",
+      "address": 47464,
+      "type": "uint16",
+      "unit": null,
+      "signed": false
+    },
+    {
+      "name": "feed_power_enable",
+      "description": "Export Limit Function Enable",
+      "address": 47509,
+      "type": "uint16",
+      "unit": null,
+      "signed": false
+    },
+    {
+      "name": "export_power_cap",
+      "description": "Max Allowed Grid Export (W)",
+      "address": 47510,
+      "type": "uint16",
+      "unit": "W",
+      "signed": false
+    },
+    {
+      "name": "meter_target_power_offset",
+      "description": "Meter Target Power Offset (bias)",
+      "address": 47120,
+      "type": "int16",
+      "unit": "W",
+      "signed": true
+    },
+    {
+      "name": "ems_power_mode",
+      "description": "EMS Power Mode (0x0001 Auto, 0x0004 Import-AC)",
+      "address": 47511,
+      "type": "uint16",
+      "unit": null,
+      "signed": false
+    },
+    {
+      "name": "ems_power_set",
+      "description": "EMS Power Set (W) for Import/Export modes",
+      "address": 47512,
+      "type": "int16",
+      "unit": "W",
+      "signed": true
+    },
+    {
+      "name": "battery_power_setpoint",
+      "description": "Set Charge/Discharge Power",
+      "address": 5000,
+      "type": "int16",
+      "unit": "W",
+      "signed": true
+    },
+    {
+      "name": "mode_selection",
+      "description": "Operating Mode (0=Auto, 1=Charge, 2=Discharge)",
+      "address": 5001,
+      "type": "uint16",
+      "unit": null,
+      "signed": false
+    }
+  ]
+}

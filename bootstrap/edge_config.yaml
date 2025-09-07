@@ -1,0 +1,13 @@
+# edge_config.yaml
+
+# --- Required minimum for boot ---
+api_base_url: "http://localhost:8000"
+MQTT_BROKER_HOST: "localhost"
+MQTT_BROKER_PORT: 1883
+MQTT_TOPIC: "lanzone/lanzone-1/updates"
+group_id: "lanzone-001"
+KEEP_ALIVE: 60
+ingest_endpoint: "/blob/ingest"
+state_validation_endpoint: "/edge/validate-state"
+modbus_validation_endpoint: "/edge/validate-modbus"
+unit_id: 1

@@ -1,0 +1,21 @@
+
+
+
+
+export_cap_w: Export cap (W).
+external_meter: Bool (enable CT).
+meter_bias_w: Initial bias (e.g. -50).
+
+
+cheap_window: {"start":"HH:MM","end":"HH:MM"}.  -. fallback 
+
+import_charge_power_w: Import setpoint during cheap window.
+
+target_soc_percent: SOC threshold to stop Import‑AC.
+
+auto_bias_trim: Optional dict:{
+    enable: bool
+    target_w: desired steady grid power (often 0 or slight import)
+    deadband_w: tolerance before adjusting (e.g. 30)
+    step_w: single adjustment size (e.g. 10)
+}
