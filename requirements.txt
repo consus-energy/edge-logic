@@ -1,0 +1,6 @@
+
+# Python dependencies for this project
+pyyaml
+requests
+paho-mqtt
+pydantic

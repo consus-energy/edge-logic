@@ -9,6 +9,8 @@ from schemas.alerts import AlertEvent
 from schemas.telemetry import TelemetryPayload  # adjust path as needed
 
 
+from bootstrap.edge_api import _auth_headers
+
 
   
 
@@ -25,7 +27,10 @@ def post_to_backend(data: list):
         data = serialize_datetimes(data)
         url = EDGE_STATE.comms_settings["API_URL"] + EDGE_STATE.comms_settings["ingest_endpoint"]
 
-        response = requests.post(url, json=data)
+
+
+
+        response = requests.post(url, json=data, timeout=10, headers=_auth_headers(EDGE_STATE))
         if response.status_code != 200:
             logger.error(f"Failed to post data to backend: {response.status_code} - {response.text}")
             raise Exception(f"Backend returned error: {response.status_code} - {response.text}")
@@ -119,7 +124,8 @@ def post_health_alerts(alerts: list[dict]):
             raise RuntimeError("API_URL not configured in EDGE_STATE.comms_settings")
         endpoint = EDGE_STATE.comms_settings.get("health_endpoint", "/blob/health")
         url = base + endpoint
-        resp = requests.post(url, json=alerts, timeout=10)
+
+        resp = requests.post(url, json=alerts, timeout=10, headers=_auth_headers(EDGE_STATE))
         if resp.status_code // 100 != 2:
             logger.error(f"Health post failed {resp.status_code}: {resp.text}")
             return 1
