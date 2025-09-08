@@ -1,12 +1,20 @@
 # --- Required minimum for boot ---
-api_base_url: "https://consus-ems-main-1008782913560.europe-west1.run.app"
+api_base_url: "https://bms-api-1008782913560.europe-west2.run.app"
 MQTT_BROKER_HOST: "ibce3b30.ala.eu-central-1.emqxsl.com"
 MQTT_BROKER_PORT: 8883
 MQTT_TOPIC: "lanzone/LANZ-001/updates"
+
+MQTT_USER: "edge-test-1"
+MQTT_PASSWORD: "edge-test-1"
+
+API_KEY: "token1"
+
 group_id: "LANZ-001"
 KEEP_ALIVE: 60
 
 # --- FastAPI endpoints (relative to api_base_url) ---
+# HARDCODE LANZONE AND ADD ARGS FOR BOOT?
+
 ingest_endpoint: "/blob/ingest"
 state_validation_endpoint: "/edge/validate-state"
 modbus_validation_endpoint: "/edge/validate-modbus"

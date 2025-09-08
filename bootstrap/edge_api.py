@@ -5,8 +5,8 @@ from core.battery_unit import BatteryUnit
 import time
 import socket
 
-
 from schemas.edge_state import EdgeStatePayload  
+logger = logging.getLogger(__name__)
 
 EAD_PROBES = {
     "meter_total_active_power": "36025",  # W (+/- import/export)
@@ -18,7 +18,13 @@ EAD_PROBES = {
     "meter_path": "50091",                # internal/external path flag
 }
 
-logger = logging.getLogger(__name__)
+
+
+def _auth_headers(edge_state) -> dict:
+    token = edge_state.get_comms_setting("API_KEY")
+    if token:
+        return {"Authorization": f"Bearer {token}"}
+    return {}
 
 def init_edge_state(edge_state):
     """
@@ -41,7 +47,7 @@ def init_edge_state(edge_state):
         url = f"{url}/edge/init?lanzone_id={group_id}"
 
         logger.info(f"[EdgeAPI] Calling {url}")
-        resp = requests.post(url, timeout=10)
+        resp = requests.post(url, timeout=10, headers=_auth_headers(edge_state))
         logger.info(f"[EdgeAPI] Response: {resp.status_code} {resp.text}")
 
         if resp.status_code != 200:
@@ -53,11 +59,15 @@ def init_edge_state(edge_state):
         # Overwrite EdgeState
         edge_state.update_settings(payload.get("settings", {}))
 
+        edge_state.update_comms_settings(payload.get("lanzone", {}))
+
         for b in payload.get("batteries", []):
             edge_state.update_battery(b["consus_id"], b)
 
         for t in payload.get("tasks", []):
             edge_state.update_task(t["consus_id"], t)
+
+        
 
         logger.info("[EdgeAPI] EdgeState initialized from API")
         logger.info(f"[EdgeAPI] Init succeeded with {url}")
@@ -89,7 +99,7 @@ def check_config(edge_state) -> bool:
     logger.info(f"[EdgeAPI] Validating EdgeState config at {url}")
 
     try:
-        resp = requests.post(url, json=validated_payload.model_dump(mode="json"), timeout=10)
+        resp = requests.post(url, json=validated_payload.model_dump(mode="json"), timeout=10, headers=_auth_headers(edge_state))
         resp_data = resp.json() if resp.status_code == 200 else {}
         logger.info(f"[EdgeAPI] Validation response: {resp.status_code} {resp.text}")
 
@@ -246,9 +256,11 @@ def verify_modbus_connectivity(edge_state, consus_id: str | None = None) -> dict
 
         url = base_url + endpoint
         logger.info(f"[VERIFY] Posting Modbus results to {url}")
-        resp = requests.post(url, json=final_payload, timeout=10)
+        resp = requests.post(url, json=final_payload, timeout=10, headers=_auth_headers(edge_state))
         logger.info(f"[VERIFY] Backend response: {resp.status_code} {resp.text}")
     except Exception as e:
         logger.error(f"[VERIFY] Failed to post Modbus results to backend: {e}")
 
     return final_payload
+
+

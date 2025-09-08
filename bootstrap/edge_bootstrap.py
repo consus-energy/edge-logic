@@ -35,8 +35,8 @@ def load_bootstrap_config(filepath="bootstrap/edge_config.yaml"):
 
     required_keys = ["api_base_url", "MQTT_BROKER_HOST", "MQTT_BROKER_PORT", 
                      "group_id", "KEEP_ALIVE", "ingest_endpoint", "state_validation_endpoint",
-                     "modbus_validation_endpoint"]
-    
+                     "modbus_validation_endpoint", "MQTT_USER", "MQTT_PASSWORD", "API_KEY"]
+
     for key in required_keys:
         if key not in config:
             raise ValueError(f"Missing required bootstrap key: {key}")

@@ -10,6 +10,7 @@ LONDON_TZ = ZoneInfo("Europe/London")
 
 
 class EdgeState:
+
     """
     LANZone live state: battery configs, global settings, comms, and tasks.
 
@@ -20,6 +21,7 @@ class EdgeState:
         * override=True beats non-override
         * else same idempotency_key → higher revision wins; tie → newer updated_at
         * else different idempotency_key → treat as replacement (new family)
+    
     """
 
     def __init__(self, tz: ZoneInfo = LONDON_TZ, fallback_max_days: int = 2):
@@ -58,6 +60,9 @@ class EdgeState:
 
     def get_setting(self, key: str):
         return self.settings.get(key)
+    
+    def get_comms_setting(self, key: str):
+        return self.comms_settings.get(key)
 
     # ---------- task API (MQTT entrypoint) ----------
     def update_task(self, consus_id: Union[str, List[str]], new_task: Optional[dict]) -> None:

@@ -44,13 +44,16 @@ def main():
         "API_URL": bootstrap["api_base_url"],
         "MQTT_BROKER_HOST": bootstrap["MQTT_BROKER_HOST"],
         "MQTT_BROKER_PORT": bootstrap["MQTT_BROKER_PORT"],
+        "MQTT_USER": bootstrap["MQTT_USER"],
+        "MQTT_PASSWORD": bootstrap["MQTT_PASSWORD"],
         "group_id": bootstrap["group_id"],
         "KEEP_ALIVE": bootstrap["KEEP_ALIVE"],
         "MQTT_TOPIC": topic,
         "state_validation_endpoint": bootstrap["state_validation_endpoint"],
         "modbus_validation_endpoint": bootstrap["modbus_validation_endpoint"],
         "EDGE_PI_IP": bootstrap.get("EDGE_PI_IP", None),
-        "ingest_endpoint": bootstrap["ingest_endpoint"]
+        "ingest_endpoint": bootstrap["ingest_endpoint"],
+        "API_KEY": bootstrap["API_KEY"]
     })
 
     EDGE_STATE.set_register_map(reg)
