@@ -31,7 +31,7 @@ def init_edge_state(edge_state):
     Attempt /edge/init with fallback URLs if the primary API fails.
     Pull dynamic config from backend /edge/init and update EdgeState.
     """
-    url = edge_state.get_comms_setting("API_URL")
+    url = edge_state.get_comms_setting("api_base_url")
     logger.info(f"[EdgeAPI] Trying to init EdgeState with URLs: {url}")
 
     if not url:
@@ -95,7 +95,7 @@ def check_config(edge_state) -> bool:
         return False
 
     # Step 2: Remote POST
-    url = edge_state.get_comms_setting("API_URL") + edge_state.get_comms_setting("state_validation_endpoint")
+    url = edge_state.get_comms_setting("api_base_url") + edge_state.get_comms_setting("state_validation_endpoint")
     logger.info(f"[EdgeAPI] Validating EdgeState config at {url}")
 
     try:
@@ -248,10 +248,10 @@ def verify_modbus_connectivity(edge_state, consus_id: str | None = None) -> dict
 
     # Post to backend (unchanged)
     try:
-        base_url = edge_state.get_comms_setting("API_URL")
+        base_url = edge_state.get_comms_setting("api_base_url")
         endpoint = edge_state.get_comms_setting("modbus_validation_endpoint")
         if not base_url or not endpoint:
-            logger.error("[VERIFY] Missing API_URL or modbus_validation_endpoint in EdgeState")
+            logger.error("[VERIFY] Missing api_base_url or modbus_validation_endpoint in EdgeState")
             return final_payload
 
         url = base_url + endpoint

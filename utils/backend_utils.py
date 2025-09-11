@@ -25,10 +25,7 @@ def post_to_backend(data: list):
         # Serialize datetimes in the data
 
         data = serialize_datetimes(data)
-        url = EDGE_STATE.comms_settings["API_URL"] + EDGE_STATE.comms_settings["ingest_endpoint"]
-
-
-
+        url = EDGE_STATE.comms_settings.get("api_base_url") + EDGE_STATE.comms_settings.get("ingest_endpoint","/blob/ingest")
 
         response = requests.post(url, json=data, timeout=10, headers=_auth_headers(EDGE_STATE))
         if response.status_code != 200:
@@ -119,9 +116,9 @@ def post_health_alerts(alerts: list[dict]):
             return 0
 
         alerts = serialize_datetimes(validated)
-        base = EDGE_STATE.comms_settings.get("API_URL")
+        base = EDGE_STATE.comms_settings.get("api_base_url")
         if not base:
-            raise RuntimeError("API_URL not configured in EDGE_STATE.comms_settings")
+            raise RuntimeError("api_base_url not configured in EDGE_STATE.comms_settings")
         endpoint = EDGE_STATE.comms_settings.get("health_endpoint", "/blob/health")
         url = base + endpoint
 

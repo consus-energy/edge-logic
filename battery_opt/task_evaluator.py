@@ -27,7 +27,7 @@ class TaskEvaluator:
             if battery_mode == "forced_charging":
                 return "forced_charging"
             
-
+            return "active"
             # TASK STATUS REMOVED ONLY BASED ON BATTERY/ EDGE STATE
 
             #task = EDGE_STATE.tasks.get(self.consus_id, {})
@@ -41,7 +41,7 @@ class TaskEvaluator:
                 #return "active"
 
             # Fallback
-            return "active"
+            
         except Exception as e:
             logger.exception(f"[{self.consus_id}] TaskEvaluator error: {e}")
             return "idle"

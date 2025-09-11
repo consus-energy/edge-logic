@@ -39,9 +39,9 @@ def main():
     logger.info(f"[BOOTSTRAP] Loaded register map with {(reg)} entries")
     topic = get_mqtt_topic(bootstrap["group_id"])
 
-    # SCHEMA VALIDATION?
+    # SCHEMA VALIDATION
     EDGE_STATE.update_comms_settings({
-        "API_URL": bootstrap["api_base_url"],
+        "api_base_url": bootstrap["api_base_url"],
         "MQTT_BROKER_HOST": bootstrap["MQTT_BROKER_HOST"],
         "MQTT_BROKER_PORT": bootstrap["MQTT_BROKER_PORT"],
         "MQTT_USER": bootstrap["MQTT_USER"],
@@ -65,11 +65,12 @@ def main():
         logger.info("[BOOTSTRAP] EdgeState pulled from /edge/init")
          
         #check config is crrect through post
-        x = check_config(EDGE_STATE)
-        logger.info(f"[BOOTSTRAP] EdgeState validation result: {x}")
-       
-        y = verify_modbus_connectivity(EDGE_STATE)
-        logger.info(f"[BOOTSTRAP] Modbus connectivity verified: {y}")
+        
+         # TEMP removed
+        #x = check_config(EDGE_STATE)
+        #logger.info(f"[BOOTSTRAP] EdgeState validation result: {x}")
+        #y = verify_modbus_connectivity(EDGE_STATE)
+        #logger.info(f"[BOOTSTRAP] Modbus connectivity verified: {y}")
 
     
     

@@ -23,7 +23,7 @@ class BatteryController:
     def get_live_config(self):
         cfg = EDGE_STATE.battery_configs.get(self.consus_id, {})
         settings = EDGE_STATE.settings
-        task = EDGE_STATE.tasks.get(self.consus_id, {})
+        task = EDGE_STATE.get_task(self.consus_id)
         return cfg, settings, task
 
     def _handle_mode(self, mode: str, timestamp: datetime, cfg, settings) -> TelemetryPayload:

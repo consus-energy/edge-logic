@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from core.edge_state import EDGE_STATE
 
 logger = logging.getLogger(__name__)
@@ -18,9 +18,9 @@ class EMSManager:
     def __init__(self, consus_id: str):
         self.consus_id = consus_id
         self._commissioned = False
-        # Ramp tracking
         self._last_setpoint_w = 0
-        self._last_setpoint_ts = None  # epoch seconds
+        self._last_setpoint_ts = None
+        self._hold_until = None 
 
     # ---------- commissioning ----------
     def commission_if_needed(self, unit):
@@ -102,19 +102,41 @@ class EMSManager:
         return False
 
     def in_charge_window(self) -> bool:
-        now = datetime.now().time()
-        windows = EDGE_STATE.get_charge_windows(self.consus_id)  # dynamic(today) → else static
+        now = datetime.now(EDGE_STATE.tz).time()   # use EdgeState tz
+        windows = EDGE_STATE.get_charge_windows(self.consus_id)
         if not windows:
             return False
-        # left-closed, right-open
         for s, e in windows:
             if s <= e:
                 if s <= now < e:
                     return True
-            else:
+            else:  # spans midnight
                 if now >= s or now < e:
                     return True
         return False
+
+    def _current_window_end_dt(self, now_dt: datetime) -> datetime | None:
+        """Return the datetime (in EDGE_STATE.tz) at which the *current* window ends, or None if not in a window."""
+        now_t = now_dt.timetz().replace(tzinfo=None)  # use naive time for comparisons
+        windows = EDGE_STATE.get_charge_windows(self.consus_id)
+        if not windows:
+            return None
+        for s, e in windows:
+            # normalize to today/tomorrow with wrap handling
+            if s <= e:
+                if s <= now_t < e:
+                    return now_dt.replace(hour=e.hour, minute=e.minute, second=getattr(e, "second", 0), microsecond=0)
+            else:
+                # window spans midnight: active if now>=s or now<e
+                if now_t >= s:
+                    # ends "tomorrow" at e
+                    end_date = (now_dt + timedelta(days=1)).date()
+                    return datetime.combine(end_date, e, tzinfo=EDGE_STATE.tz)
+                if now_t < e:
+                    # started "yesterday" at s, ends today at e
+                    return now_dt.replace(hour=e.hour, minute=e.minute, second=getattr(e, "second", 0), microsecond=0)
+        return None
+    
 
     def in_balance_window(self) -> bool:
         return not self.in_charge_window()
@@ -123,24 +145,55 @@ class EMSManager:
 
     # ---------- decide/apply ----------
     def decide(self, unit, soc: float, pv_power: int | float = 0) -> tuple[int, int]:
-        """Return (ems_mode, ems_power_set).
-        Auto mode lets inverter hold grid exchange ~0.
-        Charge window triggers Import-AC until target SOC.
+        """
+        Return (ems_mode, ems_power_set).
+
+        Policy:
+        - If in charge window and SOC < target -> Import-AC with positive setpoint (charging).
+        - If in charge window and SOC >= target -> HOLD (no discharge) by staying in Import-AC with setpoint 0
+          until the window ends.
+        - Outside windows -> AUTO (balance to ~0 exchange).
         """
         settings = EDGE_STATE.settings
+        now_dt = datetime.now(EDGE_STATE.tz)
+
         target_soc = settings.get("target_soc_percent", 100) / 100.0
         base_import_power_w = settings.get("import_charge_power_w", 0)
-        # If PV available during charge window, reduce grid import so total charge ≈ base target
         min_import = settings.get("min_import_w", 0)
 
-        if self.in_charge_window() and soc < target_soc * 0.999:
+        # Optional dynamic cap from the active dynamic task
+        dyn = EDGE_STATE.get_task(self.consus_id) or {}
+        dyn_cap_kw = dyn.get("max_import_limit_kw")
+
+        in_window = self.in_charge_window()
+
+        if in_window:
+            # If we just entered (or are in) a window and have reached target, latch hold until window end.
+            if soc >= target_soc * 0.99:
+                if self._hold_until is None or now_dt >= self._hold_until:
+                    self._hold_until = self._current_window_end_dt(now_dt)
+                    logger.info("[%s] Reached target SOC; HOLD until %s", self.consus_id, self._hold_until)
+                # Stay in Import-AC with setpoint 0 → prevents discharge during cheap window
+                return IMPORT_AC_MODE, 0
+
+            # Charging path (below target)
             if base_import_power_w > 0:
                 effective = base_import_power_w - pv_power
-                if effective < min_import:
+                if isinstance(min_import, (int, float)) and effective < min_import:
                     effective = min_import
             else:
                 effective = 0
-            return IMPORT_AC_MODE, int(effective)
+
+            # Apply dynamic cap if present
+            if isinstance(dyn_cap_kw, (int, float)) and dyn_cap_kw > 0:
+                effective = min(effective, int(dyn_cap_kw * 1000))
+
+            return IMPORT_AC_MODE, int(max(0, effective))
+
+        # Not in a charge window: clear hold and balance
+        if self._hold_until is not None and now_dt >= self._hold_until:
+            logger.info("[%s] Charge window ended; clearing HOLD", self.consus_id)
+        self._hold_until = None
         return AUTO_MODE, 0
 
     def apply(self, unit, soc: float, meter_p: int | float = 0, pv_power: int | float = 0):

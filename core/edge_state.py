@@ -58,6 +58,9 @@ class EdgeState:
     def get_battery_config(self, consus_id: str) -> dict:
         return self.battery_configs.get(consus_id, {})
 
+    def get_register_map(self) -> dict:
+        return self.register_map
+
     def get_setting(self, key: str):
         return self.settings.get(key)
     
