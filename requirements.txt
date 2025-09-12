@@ -1,6 +1,7 @@
 
-# Python dependencies for this project
+
 pyyaml
 requests
 paho-mqtt
 pydantic
+pymodbus==2.5.3

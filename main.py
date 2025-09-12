@@ -7,21 +7,22 @@ from logging_config import LOGGING_CONFIG
 import os
 
 
+# --- Container-friendly logging to STDOUT ---
 if os.getenv("LOG_TO_STDOUT", "1") == "1":
-    # Replace any FileHandlers with a console StreamHandler
-    LOGGING_CONFIG["handlers"] = {
-        "console": {
-            "class": "logging.StreamHandler",
-            "level": "INFO",
-            "formatter": "standard",
-            "stream": "ext://sys.stdout",
-        }
-    }
-    LOGGING_CONFIG["root"] = {"level": "INFO", "handlers": ["console"]}
-
-logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger(__name__)
-logger.info("Logging configured.")
+    # Simple, robust console logging; no dictConfig used.
+    logging.basicConfig(
+        level=os.getenv("LOG_LEVEL", "INFO"),
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+    )
+    logger = logging.getLogger(__name__)
+    logger.info("Logging configured for STDOUT (basicConfig).")
+else:
+    # Fall back to your existing dictConfig setup (file handlers etc.)
+    import logging.config
+    from logging_config import LOGGING_CONFIG
+    logging.config.dictConfig(LOGGING_CONFIG)
+    logger = logging.getLogger(__name__)
+    logger.info("Logging configured via dictConfig.")
 
 
 
