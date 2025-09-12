@@ -11,7 +11,7 @@ permissions:
 
 env:
   PROJECT_ID: consus-ems         
-  REGION: europe-west1                   
+  REGION: europe-west2                 
   REPO: consus-edge                     # <-- your Artifact Registry repo name
   IMAGE: edge-image                     # <-- your image name in that repo
 
