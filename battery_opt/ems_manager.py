@@ -163,7 +163,7 @@ class EMSManager:
 
         # Optional dynamic cap from the active dynamic task
         dyn = EDGE_STATE.get_task(self.consus_id) or {}
-        dyn_cap_kw = dyn.get("max_import_limit_kw")
+        dyn_cap_kw = dyn.get("max_import_limit")
 
         in_window = self.in_charge_window()
 

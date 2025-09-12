@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 class CommsSettings(BaseModel):
     api_base_url: str = "http://localhost:8000"
-    ingest_endpoint: str = "/blob/ingest"
+    ingest_endpoint: str = "/ingest-operations"
     state_validation_endpoint: str = "/edge/validate-state"
     modbus_validation_endpoint: str = "/edge/validate-modbus"
     MQTT_BROKER_HOST: str = "localhost"
