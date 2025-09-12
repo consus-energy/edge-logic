@@ -3,27 +3,27 @@ name: Build & Push Edge Image (GAR)
 on:
   push:
     branches: [ "main" ]
-  tags:
-    - "v*.*.*"
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
 
 env:
-  PROJECT_ID: consus-ems           
-  REGION: europe-west1                   
-  REPO: edge-logic                      
-  IMAGE: edge-image                      # image name you want
-  IMAGE_BASE: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}
+  PROJECT_ID: consus-ems         
+  REGION: europe-west1                   # <-- set if different
+  REPO: edge-logic                     # <-- your Artifact Registry repo name
+  IMAGE: edge-image                     # <-- your image name in that repo
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up QEMU (for multi-arch)
+      - name: Set up QEMU (multi-arch)
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Buildx
@@ -33,11 +33,16 @@ jobs:
         run: |
           echo "${{ secrets.GCP_SA_KEY }}" | docker login -u _json_key --password-stdin ${{ env.REGION }}-docker.pkg.dev
 
+      - name: Derive image base (GAR path)
+        id: img
+        run: |
+          echo "base=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}" >> $GITHUB_OUTPUT
+
       - name: Docker metadata (tags/labels)
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.IMAGE_BASE }}
+          images: ${{ steps.img.outputs.base }}
           tags: |
             type=raw,value=main,enable={{is_default_branch}}
             type=sha,enable=true,prefix=sha-
@@ -46,7 +51,7 @@ jobs:
             org.opencontainers.image.source=${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
 
-      - name: Build & Push (multi-arch, cached)
+      - name: Build & Push (multi-arch)
         uses: docker/build-push-action@v6
         with:
           context: .
