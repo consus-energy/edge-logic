@@ -7,6 +7,17 @@ from logging_config import LOGGING_CONFIG
 import os
 
 
+if os.getenv("LOG_TO_STDOUT", "1") == "1":
+    # Replace any FileHandlers with a console StreamHandler
+    LOGGING_CONFIG["handlers"] = {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "standard",
+            "stream": "ext://sys.stdout",
+        }
+    }
+    LOGGING_CONFIG["root"] = {"level": "INFO", "handlers": ["console"]}
 
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
