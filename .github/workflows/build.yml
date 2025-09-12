@@ -1,18 +1,16 @@
-name: Build & Push Edge Image (GAR)
+name: Push to GAR
 
 on:
   push:
-    branches: [ "main" ]
-    tags:
-      - "v*.*.*"
+    branches: ['main']
 
 permissions:
   contents: read
 
 env:
-  PROJECT_ID: consus-ems          # <-- your GCP project id
-  REGION: europe-west2            # <-- MUST match your repo's region
-  REPO: consus-edge               # <-- your Artifact Registry repo name
+  PROJECT_ID: consus-ems          # <-- set correctly
+  REGION: europe-west2            # <-- MUST match your AR repo region
+  REPO: consus-edge               # <-- your AR repo name
   IMAGE: edge-image               # <-- your image name
 
 jobs:
@@ -21,44 +19,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+      # Auth to GCP with your JSON secret
+      - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Set up gcloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+      # Install gcloud and configure Docker for GAR
+      - uses: google-github-actions/setup-gcloud@v2
+      - run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
-      - name: Configure Docker for GAR
-        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
-
-      - name: Sanity check: list AR repos
-        run: gcloud artifacts repositories list --location=${{ env.REGION }} --project=${{ env.PROJECT_ID }}
-
-      - name: Compute image base
+      # Build the full image path once and expose it as an output
+      - name: Set image path
         id: img
-        run: echo "base=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}" >> $GITHUB_OUTPUT
+        run: echo "base=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}" >> "$GITHUB_OUTPUT"
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      # Multi-arch build/push
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Docker metadata (tags + labels)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ steps.img.outputs.base }}
-          tags: |
-            type=raw,value=main,enable={{is_default_branch}}
-            type=sha,enable=true,prefix=sha-
-            type=ref,event=tag
-
-      - name: Build and push (multi-arch)
+      - name: Build & push
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
           platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
+          push: true
+          tags: ${{ steps.img.outputs.base }}:main
