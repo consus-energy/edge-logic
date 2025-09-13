@@ -12,8 +12,7 @@ API_KEY: "token1"
 group_id: "LANZ-001"
 KEEP_ALIVE: 60
 
-# --- FastAPI endpoints (relative to api_base_url) ---
-# HARDCODE LANZONE AND ADD ARGS FOR BOOT?
+
 
 ingest_endpoint: "/ingest-operations"
 state_validation_endpoint: "/edge/validate-state"
