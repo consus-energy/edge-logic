@@ -1,4 +1,4 @@
-# Edge Controller (GoodWe EMS) Overview
+# Edge Controller Overview
 
 This edge controller manages GoodWe inverter/battery systems using EMS registers for zero‑export by day and Import‑AC charging during cheap windows at night. It aggregates PV, enforces write discipline and ramp/clamp limits, monitors health, and posts telemetry and alerts to a backend.
 
